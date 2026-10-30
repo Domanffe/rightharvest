@@ -68,3 +68,18 @@ screen that the off hand is empty too).
 - Item counts before/after come from the inventory screen (or `game_inventory`
   through the game tools).
 - Block state after a click: F3 crosshair (`wheat[age=0]`).
+
+## Measured (2026-10-30)
+
+- Built with `horizon-launcher native-build … --trust-native-code`; `horizon-mixins apply` reported
+  `status: ok` and the game compiled with the bundle.
+- Scene: `setblock 215 69 537 minecraft:farmland[moisture=7]`,
+  `setblock 215 70 537 minecraft:wheat[age=7]`, empty hand selected, `give @s minecraft:wheat_seeds 5`,
+  then `horizon-ctl interact 215 70 537`.
+- Result, read back from the game: block `minecraft:wheat[age=7]` → `minecraft:wheat[age=0]`,
+  inventory `wheat_seeds: 5` → `4`. One right click, one seed spent, crop replanted.
+- With the hand empty and **no** seeds the same click picks the crop and leaves the soil empty, which
+  is the code's documented rule (`sown` stays false).
+- Not observed in game: carrot, potato, beetroot and nether wart (covered by unit tests only, all five
+  are in `runtime.rs`'s table), a LAN guest's click, and whether the drops land before the replant on
+  a slow tick.
