@@ -1,0 +1,14 @@
+[package]
+name = "rightharvest"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+description = "Right-click harvest: a ripe crop is picked and sown again"
+
+[lib]
+# This exact source is also injected as a same-crate module by horizon-mixins.
+path = "mixins/rightharvest/runtime.rs"
+
+[workspace]
+resolver = "2"
