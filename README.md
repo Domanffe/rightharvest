@@ -1,4 +1,6 @@
-# RightClickHarvest (native Horizon mod)
+# RightClickHarvest
+
+![RightClickHarvest](docs/icon.png)
 
 Right-click a **ripe** crop with an **empty hand**: it is harvested and sown
 again in one click, if you carry the seed for it.
