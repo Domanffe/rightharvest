@@ -67,7 +67,7 @@ The launcher builds native mods; the mod plays in the instance built for it.
 3. In game: **Options → Mods** lists `rightharvest`; leave it on. Turn it off
    there to stop the hook from acting (the code stays built in).
 
-Pinned to Horizon `a46ce6898bd72016e061aaec1afc1375b384deac` (the commit in
+Pinned to Horizon `4aa6854a886183440256f4f4a4a9d1ed853227a1` (the commit in
 `[compatibility]`). It uses only private game functions, so a Horizon update can
 move them: rebuild and re-check `horizon-mixins plan` after one.
 

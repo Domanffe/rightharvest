@@ -5,11 +5,11 @@ only you can do.
 
 ## The file
 
-`E:\Projects\hz-mods\dist\rightharvest-0.1.0.hnmod` — 3834 bytes
-SHA-256 `a43870a89827c1d0fa861a663aa1781819b236f994191abf971c98125a3a4653`
+`C:\Users\world\Documents\HermesWorkspace\mods\rightharvest\dist\rightharvest-0.1.1.hnmod` — 3856 bytes
+SHA-256 `2f70f3a5abaca35f1ff8df7b198f0fd616eacaa5229f5113f75935e16f50255b`
 
-It holds `horizon-native.json` (game 26.3, schema 1, pinned to Horizon `a46ce68` and horizon-mixins
-`3f99a5c6`) and `mixins/rightharvest/`.
+It holds `horizon-native.json` (game 26.3, schema 1, hooks 2, pinned to Horizon `4aa6854` and
+horizon-mixins `a2af5c0`) and `mixins/rightharvest/`.
 
 ## The form
 
@@ -24,6 +24,7 @@ https://playhorizon.dev/mods/submit — GitHub sign-in, then:
 - **Authors**: Alexander (Domanffe)
 - **Licence**: MIT
 - **Source**: https://github.com/Domanffe/rightharvest
-- **File**: `rightharvest-0.1.0.hnmod`
-- **Changelog**: First release: native mod for Horizon 26.3.
+- **File**: `rightharvest-0.1.1.hnmod`
+- **Changelog**: Rebuilt on the 2026-11-01 Nightly (Horizon `4aa6854`); the mods hook is named instead
+  of pinned to a source target, so it survives a Horizon update that moves that point.
 - Public key and signature: leave empty (unsigned).

@@ -5,7 +5,7 @@
 // The mod's row in Options > Mods.
 pub const ID: &str = "rightharvest";
 pub const NAME: &str = "RightClickHarvest";
-pub const VERSION: &str = "0.1.0";
+pub const VERSION: &str = "0.1.1";
 pub const DESCRIPTION: &str = "Right-click a ripe crop: it is picked and sown again.";
 
 /// A crop the mod sows again: its highest `age`, and the item that plants it.
