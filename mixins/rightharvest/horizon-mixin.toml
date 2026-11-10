@@ -1,11 +1,11 @@
 [mod]
 id = "rightharvest"
-version = "0.1.1"
+version = "0.2.0"
 priority = 100
 
 # The commit it was tested on.
 [compatibility]
-horizon_revision = "4aa6854a886183440256f4f4a4a9d1ed853227a1"
+horizon_revision = "fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca"
 
 [[module]]
 id = "runtime"
@@ -23,17 +23,18 @@ bindings = [
   { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
 ]
 
-# Game::use_hand is one hand's turn of a right click: the block's own use and
-# then the item's, on the game that owns the world (a LAN host's, the single
-# player server's, a dedicated server's) — never the client's dry prediction.
-# Cancellable, so a harvest ends the click like a vanilla use would.
+# The block's own right-click begin, at the named hook: the id resolves against
+# whatever revision the bundle is applied to, so a use_hand that moves between
+# modules no longer breaks it. Canceling the click ends it like a vanilla use.
 [[injection]]
-id = "use-hand"
+id = "block-use"
 kind = "HEAD"
-cancellable = true
-target = "horizon_client::game::Game<'_>::use_hand"
+hook = "right_click_block"
+hook_version = 1
 helper = "harvest.rs"
 bindings = [
   { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
-  { name = "block_hit", ty = "Option<&Hit>", value = "block_hit" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "face", ty = "[i32; 3]", value = "face" },
+  { name = "canceled", ty = "&mut bool", value = "canceled" },
 ]

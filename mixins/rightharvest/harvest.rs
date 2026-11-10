@@ -1,22 +1,21 @@
 // Right-click harvest: a ripe crop under the crosshair and an empty hand pick
 // it through the player's own break (drops, statistics, sound) and sow it back
-// from the inventory. Break ends the click, as vanilla's own use would.
-fn rightharvest_use_hand(
+// from the inventory. Canceling the block use ends the click, as vanilla's own
+// use would.
+fn rightharvest_right_click_block(
     game: &mut crate::game::Game<'_>,
-    block_hit: Option<&Hit>,
-) -> ::core::ops::ControlFlow<Result<bool>> {
+    pos: [i32; 3],
+    face: [i32; 3],
+    canceled: &mut bool,
+) {
     use crate::game::native_rightharvest as m;
-    use core::ops::ControlFlow;
+    let _ = face;
 
-    let Some(hit) = block_hit else {
-        return ControlFlow::Continue(());
-    };
     // Only an empty hand — a held item keeps its own use — turned on in
     // Options > Mods, and not a spectator (who acts on nothing).
     if !game.native_on(m::ID) || game.held().is_some() || game.spectator() {
-        return ControlFlow::Continue(());
+        return;
     }
-    let pos = hit.pos;
     let state = game.world.block(pos[0], pos[1], pos[2]);
     let name = game.res.facts().get(state).name.clone();
     let age = game
@@ -26,11 +25,11 @@ fn rightharvest_use_hand(
         .state(state)
         .and_then(|s| s.properties.get("age"));
     let Some(seed) = m::ripe_seed(&name, age.map(String::as_str)) else {
-        return ControlFlow::Continue(());
+        return;
     };
     if let Err(e) = game.break_block_as_player(pos) {
         eprintln!("[rightharvest] harvesting {name} at {pos:?}: {e}");
-        return ControlFlow::Continue(());
+        return;
     }
     // A creative break drops nothing and creative sowing spends nothing.
     let mut sown = game.creative;
@@ -57,5 +56,5 @@ fn rightharvest_use_hand(
         eprintln!("[rightharvest] sowing {name} at {pos:?}: {e}");
     }
     game.swing_arm();
-    ControlFlow::Break(Ok(true))
+    *canceled = true;
 }

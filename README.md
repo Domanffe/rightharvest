@@ -39,13 +39,13 @@ inventory. In creative nothing is taken (a creative break drops nothing either).
 `mixins/rightharvest/horizon-mixin.toml`:
 
 - `[[module]] runtime` — `runtime.rs` becomes `crate::game::native_rightharvest`.
-- `[[injection]] use-hand` — cancellable `HEAD` on
-  `horizon_client::game::Game<'_>::use_hand`, the function that runs **one
-  hand's turn of a right click** on the game that owns the world: the single
+- `[[injection]] block-use` — `HEAD` on the **named hook**
+  `right_click_block` (API 21): a player's right click on a block, before the
+  block's own use and the item's, on the game that owns the world: the single
   player server's, a LAN host's, a dedicated server's. The client's own dry
   prediction (`remote_use_item_on` in `game/remote.rs`) is a different function
-  and is not touched. Ending in `Break(Ok(true))` makes the click stop there,
-  exactly like a vanilla use that acted. The hook first asks
+  and is not touched. Setting `canceled` makes the click stop there, exactly
+  like a vanilla use that acted. The hook first asks
   `native_on("rightharvest")`, so turning the mod off in Options > Mods makes
   every click vanilla again without a rebuild.
 - `[[injection]] listed` — `HEAD` on `native_hooks::Game::native_mods`: the
@@ -67,9 +67,12 @@ The launcher builds native mods; the mod plays in the instance built for it.
 3. In game: **Options → Mods** lists `rightharvest`; leave it on. Turn it off
    there to stop the hook from acting (the code stays built in).
 
-Pinned to Horizon `4aa6854a886183440256f4f4a4a9d1ed853227a1` (the commit in
-`[compatibility]`). It uses only private game functions, so a Horizon update can
-move them: rebuild and re-check `horizon-mixins plan` after one.
+Pinned to Horizon `fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca` (the commit in
+`[compatibility]`, the 2026-11-08 Nightly). Both hook points are named, so a
+Horizon update that moves the source under them does not break the bundle. The
+helper still calls private game methods (`break_block_as_player`, `level_set`,
+`with_props`), so an update can change their shape: rebuild and re-check
+`horizon-mixins plan` after one.
 
 ## Check it without the game
 

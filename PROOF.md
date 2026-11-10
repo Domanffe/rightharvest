@@ -11,9 +11,9 @@ the block state), and mark PASS/FAIL next to it.
 
 ## Before start
 
-1. `horizon-mixins plan` → `status: ok`, `injections: 1`, `modules: 1`.
-2. `horizon-mixins apply` → `status: ok`; `build/stage/…/game.rs` contains
-   `fn rightharvest_use_hand` inside `fn use_hand` and `mod native_rightharvest`.
+1. `horizon-mixins plan` → `status: ok`, `injections: 2`, `modules: 1`.
+2. `horizon-mixins apply` → `status: ok`; `build/stage/…/native_hooks.rs` contains
+   `fn rightharvest_right_click_block` inside `fn native_right_click_block` and `mod native_rightharvest`.
 3. Build with the launcher (`native-build … --trust-native-code`) → the build
    finishes; `native/build.log` has no error. A compile error here would mean a
    game API moved — the failure is in `harvest.rs`, not in the game.
