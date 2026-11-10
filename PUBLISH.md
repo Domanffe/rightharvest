@@ -21,16 +21,16 @@ https://playhorizon.dev/mods/submit — GitHub sign-in, then:
 - **For Minecraft**: `26.3`
 - **Name**: RightClickHarvest
 - **Summary** (≤160 chars): Right-click a ripe crop to pick it and sow it again.
-- **Description** (first paragraph only is kept): with an empty hand, right-click a ripe wheat, carrot,
-  potato, beetroot or nether wart: the crop is harvested with the game's own drops, sound and
-  statistics, and sown again from a seed in your inventory.
+- **Description** (first paragraph only is kept): Empty hand, right click a ripe wheat, carrot, potato,
+  beetroot or nether wart. You get the usual drops, and the crop goes right back into the soil if you
+  carry a seed. Growing crops, other blocks and a hand holding an item are left alone.
 - **Authors**: Alexander (Domanffe)
 - **Licence**: MIT
 - **Source**: https://github.com/Domanffe/rightharvest
 - **File**: `rightharvest-0.2.0.hnmod`
-- **Changelog**: Rebuilt on the 2026-11-08 Nightly (Horizon `fdc87ae`). The harvest now hangs on the
-  named `right_click_block` hook (API 21) instead of a raw `use_hand` target, which the game has since
-  moved into its own module — the bundle survives that move and any later one.
+- **Changelog**: Rebuilt for the 8 November nightly. Gameplay is unchanged: one right click still
+  harvests a ripe crop and replants it. The mod now hangs on the game's own right-click event instead
+  of a private function, so future Horizon updates won't quietly turn it off.
 - Public key and signature: leave empty (unsigned).
 
 ## What was checked
