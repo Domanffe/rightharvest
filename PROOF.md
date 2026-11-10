@@ -1,10 +1,9 @@
 # PROOF — manual check in the game
 
-**Status: not run.** I wrote the mod and checked it with `horizon-mixins
-plan`/`apply`, `cargo test`, `cargo clippy` and `cargo fmt`. Building the game
-and playing the world is the parent agent's job; nothing below is claimed as
-observed. Everything except the "before start" build steps is a step someone
-runs in game and records.
+**Status: partly run.** Run on 2026-11-10 against the 0.2.0 bundle built by the launcher on
+Nightly `fdc87ae` (`native-build`, `native-fdc87ae-d271a36fda83`); rows 1, 2 (block state only),
+5, 7 and 10 are PASS below. The rest are still unrun. Earlier: `horizon-mixins
+plan`/`apply`, `cargo test`, `cargo clippy` and `cargo fmt`.
 
 Recording: after each step write what you saw (screenshot or the inventory and
 the block state), and mark PASS/FAIL next to it.
@@ -83,3 +82,22 @@ screen that the off hand is empty too).
 - Not observed in game: carrot, potato, beetroot and nether wart (covered by unit tests only, all five
   are in `runtime.rs`'s table), a LAN guest's click, and whether the drops land before the replant on
   a slow tick.
+
+## Measured (2026-11-10, 0.2.0 on the named `right_click_block` hook)
+
+Bundle `rightharvest-0.2.0.hnmod` (sha256 `0e81979…`), built by the launcher into
+`native-fdc87ae-d271a36fda83` together with the other installed mods (31 injections, 14 modules,
+`Finished fast profile in 9m 40s`), then played and driven with `horizon-ctl`. Scene: farmland filled
+at `-3..3 / 101 / -3..3`, crops at `y=102`, player at `0 102 1`.
+
+- **Row 1, PASS (survival).** `wheat[age=7]` at `0 102 0`, empty hand: one right click →
+  `wheat[age=0]`, `inventory_change: {"minecraft:wheat_seeds": -1}`, and the inventory afterwards held
+  `wheat: 1` and `wheat_seeds: 12` — the harvest's own drops (1 wheat, 3 seeds) picked up on top of
+  10 − 1 sown.
+- **Row 2, PASS (block state, creative).** `carrots[age=7]` at `2 102 0` → `carrots[age=0]`; no seed
+  spent, nothing dropped (creative break), so the drop half of that row is still unproven.
+- **Row 5, PASS.** `wheat[age=3]` at `1 102 0`: `changed: false`, still `age=3`, no drop, no seed.
+- **Row 7, PASS.** Holding 10 wheat seeds, right click the same ripe wheat: `changed: false`, block
+  stays `age=7`, seeds untouched.
+- **Row 10, PASS.** Creative, empty hand, `wheat[age=7]` → `wheat[age=0]` with `inventory_change: {}`.
+- Not run: rows 3, 4, 6, 8, 9, 11–16.
