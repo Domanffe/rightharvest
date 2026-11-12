@@ -10,7 +10,7 @@ again in one click, if you carry the seed for it.
 | `minecraft:wheat` | 7 | `minecraft:wheat_seeds` |
 | `minecraft:carrots` | 7 | `minecraft:carrot` |
 | `minecraft:potatoes` | 7 | `minecraft:potato` |
-| `minecraft:beetroots` | 7 | `minecraft:beetroot_seeds` |
+| `minecraft:beetroots` | 3 | `minecraft:beetroot_seeds` |
 | `minecraft:nether_wart` | 3 | `minecraft:nether_wart` |
 
 The harvest is the game's own player break (`Game::break_block_as_player`), so

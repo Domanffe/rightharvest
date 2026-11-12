@@ -1,6 +1,6 @@
 [mod]
 id = "rightharvest"
-version = "0.2.0"
+version = "0.2.1"
 priority = 100
 
 # The commit it was tested on.

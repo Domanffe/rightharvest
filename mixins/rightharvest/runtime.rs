@@ -5,7 +5,7 @@
 // The mod's row in Options > Mods.
 pub const ID: &str = "rightharvest";
 pub const NAME: &str = "RightClickHarvest";
-pub const VERSION: &str = "0.2.0";
+pub const VERSION: &str = "0.2.1";
 pub const DESCRIPTION: &str = "Right-click a ripe crop: it is picked and sown again.";
 
 /// A crop the mod sows again: its highest `age`, and the item that plants it.
@@ -31,7 +31,8 @@ pub fn crop(name: &str) -> Option<Crop> {
             seed: "minecraft:potato",
         },
         "minecraft:beetroots" => Crop {
-            max_age: 7,
+            // Vanilla's beetroots blockstate has only age 0..3 (beetroots_stage0..3).
+            max_age: 3,
             seed: "minecraft:beetroot_seeds",
         },
         "minecraft:nether_wart" => Crop {
@@ -59,7 +60,7 @@ mod tests {
             ("minecraft:wheat", 7, "minecraft:wheat_seeds"),
             ("minecraft:carrots", 7, "minecraft:carrot"),
             ("minecraft:potatoes", 7, "minecraft:potato"),
-            ("minecraft:beetroots", 7, "minecraft:beetroot_seeds"),
+            ("minecraft:beetroots", 3, "minecraft:beetroot_seeds"),
             ("minecraft:nether_wart", 3, "minecraft:nether_wart"),
         ] {
             let age = max_age.to_string();
@@ -70,18 +71,16 @@ mod tests {
 
     #[test]
     fn growing_crops_are_left_alone() {
-        for name in [
-            "minecraft:wheat",
-            "minecraft:carrots",
-            "minecraft:potatoes",
-            "minecraft:beetroots",
-        ] {
+        for name in ["minecraft:wheat", "minecraft:carrots", "minecraft:potatoes"] {
             for age in ["0", "1", "3", "6"] {
                 assert_eq!(ripe_seed(name, Some(age)), None, "{name} at {age}");
             }
         }
-        for age in ["0", "1", "2"] {
-            assert_eq!(ripe_seed("minecraft:nether_wart", Some(age)), None);
+        // Beetroots and nether wart grow in three steps, so 3 there is ripe.
+        for name in ["minecraft:beetroots", "minecraft:nether_wart"] {
+            for age in ["0", "1", "2"] {
+                assert_eq!(ripe_seed(name, Some(age)), None, "{name} at {age}");
+            }
         }
     }
 
@@ -89,6 +88,7 @@ mod tests {
     fn an_age_past_the_highest_is_not_ripe_either() {
         // 8 never occurs on wheat: it is not "at least ripe", it is a mismatch.
         assert_eq!(ripe_seed("minecraft:wheat", Some("8")), None);
+        assert_eq!(ripe_seed("minecraft:beetroots", Some("4")), None);
         assert_eq!(ripe_seed("minecraft:nether_wart", Some("4")), None);
     }
 

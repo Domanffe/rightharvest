@@ -2,8 +2,9 @@
 
 **Status: partly run.** Run on 2026-11-10 against the 0.2.0 bundle built by the launcher on
 Nightly `fdc87ae` (`native-build`, `native-fdc87ae-d271a36fda83`); rows 1, 2 (block state only),
-5, 7 and 10 are PASS below. The rest are still unrun. Earlier: `horizon-mixins
-plan`/`apply`, `cargo test`, `cargo clippy` and `cargo fmt`.
+5, 7 and 10 are PASS below. On 2026-11-12 the 0.2.1 bundle (`native-fdc87ae-e18bd806a067`) ran rows
+1, 2 (survival), 4 and 5 for the beetroot fix — see the last section. The rest are still unrun.
+Earlier: `horizon-mixins plan`/`apply`, `cargo test`, `cargo clippy` and `cargo fmt`.
 
 Recording: after each step write what you saw (screenshot or the inventory and
 the block state), and mark PASS/FAIL next to it.
@@ -25,12 +26,13 @@ Commands (creative; any flat spot with sky above, at `y=64` ground):
 ```
 /gamemode creative
 /tp @s 0 65 2
-/fill 0 64 0 4 64 0 minecraft:farmland
+/fill 0 64 0 5 64 0 minecraft:farmland
 /setblock 0 65 0 minecraft:wheat[age=7]
 /setblock 1 65 0 minecraft:wheat[age=3]
 /setblock 2 65 0 minecraft:carrots[age=7]
 /setblock 3 65 0 minecraft:potatoes[age=7]
-/setblock 4 65 0 minecraft:beetroots[age=7]
+/setblock 4 65 0 minecraft:beetroots[age=3]
+/setblock 5 65 0 minecraft:beetroots[age=1]
 /setblock 0 65 1 minecraft:chest
 /give @s minecraft:wheat_seeds 10
 /give @s minecraft:carrot 5
@@ -48,8 +50,8 @@ screen that the off hand is empty too).
 | 1 | Right-click `0 65 0` (ripe wheat) | Wheat block becomes `wheat[age=0]`; wheat and seeds drop and are picked up; the seed count goes down by exactly 1 against what the harvest dropped (e.g. 10 → 9 + 1–3 picked up) | |
 | 2 | Right-click `2 65 0` (ripe carrots) | `carrots[age=0]`, carrots drop, **carrot −1** | |
 | 3 | Right-click `3 65 0` (ripe potatoes) | `potatoes[age=0]`, potatoes drop, **potato −1** | |
-| 4 | Right-click `4 65 0` (ripe beetroots) | `beetroots[age=0]`, beetroot + seeds drop, **beetroot_seeds −1** plus what dropped | |
-| 5 | Right-click `1 65 0` (wheat `age=3`) | Nothing happens: no break, no drop, no seed spent, block still `age=3` | |
+| 4 | Right-click `4 65 0` (ripe beetroots, `age=3`) | `beetroots[age=0]`, beetroot + seeds drop, **beetroot_seeds −1** plus what dropped |
+| 5 | Right-click `1 65 0` (wheat `age=3`) and `5 65 0` (beetroots `age=1`) | Nothing happens: no break, no drop, no seed spent, blocks unchanged |
 | 6 | Right-click `0 65 1` (the chest) | The chest opens as usual (nothing harvested) | |
 | 7 | Hold a hoe (or any item), right-click a ripe crop | Vanilla use of the item, crop untouched | |
 | 8 | Empty both hands of the seed, right-click a ripe crop | Crop is harvested (drops on the ground), the plot is **empty** — no crash, no seed spent | |
@@ -101,3 +103,32 @@ at `-3..3 / 101 / -3..3`, crops at `y=102`, player at `0 102 1`.
   stays `age=7`, seeds untouched.
 - **Row 10, PASS.** Creative, empty hand, `wheat[age=7]` → `wheat[age=0]` with `inventory_change: {}`.
 - Not run: rows 3, 4, 6, 8, 9, 11–16.
+
+## Measured (2026-11-12, 0.2.1 — ripe beetroots)
+
+0.2.0's crop table gave beetroots a top age of 7, while vanilla's `beetroots` block has only
+`age=0..3` (the installed 26.3 `assets/minecraft/blockstates/beetroots.json` lists exactly four
+variants, `beetroots_stage0..3`), so a ripe beetroot was never picked. The fix is `max_age: 3`. The
+rest of the table matched the assets: wheat, carrots and potatoes `age=0..7`, nether wart `age=0..3`.
+
+- Build: `horizon-launcher native-build --instance horizon --trust-native-code
+  --allow-version-mismatch` → `native-fdc87ae-e18bd806a067` (`Finished fast profile in 4m 25s`); its
+  `native-mods.json` lists `rightharvest 0.2.1`, and the staged module in
+  `native/stage/crates/horizon-client/src/game.rs` carries `VERSION: "0.2.1"` and, for beetroots,
+  `max_age: 3`.
+- Run: that build's `horizon-client.exe --resources ./.local/horizon-client/26.3 --control
+  --game-dir %APPDATA%/horizon --world rch-beetroot --seed 7 --creative`, driven by `horizon-ctl`.
+  Options → Mods lists **RightClickHarvest 0.2.1**.
+- Scene: `/fill 215 65 528 218 65 528 minecraft:farmland`, then `beetroots[age=3]` at `215 66 528`,
+  `beetroots[age=1]` at `216 66 528`, `wheat[age=7]` at `217 66 528`, `carrots[age=7]` at
+  `218 66 528`; survival, 10 beetroot seeds / 5 carrots / 10 wheat seeds, empty hand.
+- **Row 4, PASS.** Right-click `215 66 528`: `block_before minecraft:beetroots[age=3]` →
+  `minecraft:beetroots[age=0]`, `changed: true`; `beetroot_seeds` 10 → 11 (one sown, two dropped and
+  picked up) and the beetroot the loot command dropped arrived as `minecraft:beetroot: 1`.
+- **Row 5, PASS (beetroots).** `beetroots[age=1]` at `216 66 528`: `changed: false`, still `age=1`,
+  inventory untouched.
+- **Row 1, PASS (again, survival).** `wheat[age=7]` → `wheat[age=0]`,
+  `inventory_change {"minecraft:wheat_seeds": -1}`.
+- **Row 2, PASS (survival, so the drop half is now proven too).** `carrots[age=7]` →
+  `carrots[age=0]`, `inventory_change {"minecraft:carrot": -1}`.
+- Not run: rows 3, 6, 8, 9, 11–16.
